@@ -1,0 +1,70 @@
+#每5分钟更新area_summary_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/area_summary_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./area_summary_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/area_summary_bydate.log'
+
+#每5分钟更新flow_summary_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/flow_summary_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./flow_summary_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/flow_summary_bydate.log'
+
+#每5分钟更新flow_summary_byhour表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/flow_summary_byhour.lock -c 'cd /usr/local/services/scripts/sh && ./flow_summary_byhour.sh 1 &> /usr/local/services/scripts/crontab_log/flow_summary_byhour.log'
+
+#每5分钟更新searchword_summary_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/searchword_summary_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./searchword_summary_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/searchword_summary_bydate.log'
+
+#每5分钟更新sourcesite_summary_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/sourcesite_summary_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./sourcesite_summary_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/sourcesite_summary_bydate.log'
+
+#每5分钟更新visitor_summary_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/visitor_summary_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./visitor_summary_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/visitor_summary_bydate.log'
+
+#每5分钟更新visituri_summary_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/visituri_summary_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./visituri_summary_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/visituri_summary_bydate.log'
+
+#每5分钟更新flow_trend_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/flow_trend_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./flow_trend_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/flow_trend_bydate.log'
+
+#每5分钟更新flow_trend_byhour表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/flow_trend_byhour.lock -c 'cd /usr/local/services/scripts/sh && ./flow_trend_byhour.sh 1 &> /usr/local/services/scripts/crontab_log/flow_trend_byhour.log'
+
+#每5分钟更新searchword_detail_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/searchword_detail_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./searchword_detail_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/searchword_detail_bydate.log'
+
+#每5分钟更新channel_detail_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/channel_detail_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./channel_detail_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/channel_detail_bydate.log'
+
+#每5分钟更新device_detail_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/device_detail_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./device_detail_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/device_detail_bydate.log'
+
+#每5分钟更新sourcesite_detail_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/sourcesite_detail_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./sourcesite_detail_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/sourcesite_detail_bydate.log'
+
+#每5分钟更新user_pv_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/user_pv_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./user_pv_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/user_pv_bydate.log'
+
+#每5分钟更新user_visit_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/user_visit_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./user_visit_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/user_visit_bydate.log'
+
+#每5分钟更新user_visittime_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/user_visittime_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./user_visittime_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/user_visittime_bydate.log'
+
+#每5分钟更新visitor_detail_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/visitor_detail_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./visitor_detail_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/visitor_detail_bydate.log'
+
+#每5分钟更新visitor_life_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/visitor_life_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./visitor_life_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/visitor_life_bydate.log'
+
+#每5分钟更新area_detail_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/area_detail_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./area_detail_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/area_detail_bydate.log'
+
+#每5分钟更新visituri_detail_bydate表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/visituri_detail_bydate.lock -c 'cd /usr/local/services/scripts/sh && ./visituri_detail_bydate.sh 1 &> /usr/local/services/scripts/crontab_log/visituri_detail_bydate.log'
+
+#每5分钟更新visitor_detail_byinfo表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/visitor_detail_byinfo.lock -c 'cd /usr/local/services/scripts/sh && ./visitor_detail_byinfo.sh 1 &> /usr/local/services/scripts/crontab_log/visitor_detail_byinfo.log'
+
+
+#每5分钟更新visitor_detail_bysession表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/visitor_detail_bysession.lock -c 'cd /usr/local/services/scripts/sh && ./visitor_detail_bysession.sh 1 &> /usr/local/services/scripts/crontab_log/visitor_detail_bysession.log'
+
+
+#每5分钟更新visitor_summary_byvisitor表
+*/5 * * * * flock -xn /usr/local/services/scripts/flock/visitor_summary_byvisitor.lock -c 'cd /usr/local/services/scripts/sh && ./visitor_summary_byvisitor.sh 1 &> /usr/local/services/scripts/crontab_log/visitor_summary_byvisitor.log'
