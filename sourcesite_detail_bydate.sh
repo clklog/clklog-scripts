@@ -85,7 +85,7 @@ FROM (
 		SELECT lib, project_name, is_first_day,
 		  if(country = '', 'N/A', country) AS country
 			, if(province = '', 'N/A', province) AS province
-			, if(latest_referrer_host = '' or latest_referrer_host='url的domain解析失败', 'N/A', latest_referrer_host) AS latest_referrer_host 
+			, if(latest_referrer_host = '', 'N/A', latest_referrer_host) AS latest_referrer_host 
 			, multiIf(lib = 'js'
 				AND event = '\$pageview', event, lib IN ('iOS', 'Android')
 				AND event = '\$AppViewScreen', event, lib = 'MiniProgram'
@@ -103,7 +103,7 @@ FROM (
 			AND is_first_day = 'true', distinct_id, NULL) AS new_user
 			, client_ip 
 		FROM ${ck_log_db}log_analysis
-		WHERE stat_date = '${cal_date}'
+		WHERE stat_date = '${cal_date}' and latest_referrer_host not in ('取值异常')
 	) t1
 	GROUP BY lib, project_name, is_first_day, country, province,latest_referrer_host WITH CUBE
 ) t2
@@ -115,13 +115,13 @@ FROM (
 			SELECT lib, project_name, is_first_day
 				, if(country = '', 'N/A', country) AS country
 				, if(province = '', 'N/A', province) AS province 
-				, if(latest_referrer_host = '' or latest_referrer_host='url的domain解析失败', 'N/A', latest_referrer_host) AS latest_referrer_host 
+				, if(latest_referrer_host = '', 'N/A', latest_referrer_host) AS latest_referrer_host 
 				, arraySort(groupUniqArray(stat_date)) AS stat_dates
 				, max(log_time) - min(log_time) AS diff
 				, count(1) AS pv
 			FROM ${ck_log_db}log_analysis
 			WHERE stat_date <= '${cal_date}'
-				AND stat_date >= '${previous_date}'
+				AND stat_date >= '${previous_date}' and latest_referrer_host not in ('取值异常')
 				AND event_session_id <> ''
 			GROUP BY event_session_id, lib, project_name, is_first_day, country, province,latest_referrer_host
 		) t3

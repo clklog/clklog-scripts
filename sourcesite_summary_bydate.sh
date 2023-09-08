@@ -81,7 +81,7 @@ FROM (
 				AND event = '\$AppViewScreen', event, lib = 'MiniProgram'
 				AND event = '\$MPViewScreen', event, NULL) AS pv 
 		FROM ${ck_log_db}log_analysis
-		WHERE stat_date = '${cal_date}'
+		WHERE stat_date = '${cal_date}' and latest_referrer_host not in ('取值异常')
 	) t1
 	GROUP BY lib, project_name,latest_referrer_host WITH CUBE
 ) t2"

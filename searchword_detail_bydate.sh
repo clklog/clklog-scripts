@@ -103,7 +103,7 @@ FROM (
 			AND is_first_day = 'true', distinct_id, NULL) AS new_user
 			, client_ip 
 		FROM ${ck_log_db}log_analysis
-		WHERE stat_date = '${cal_date}'
+		WHERE stat_date = '${cal_date}' and latest_search_keyword not in ('取值异常','未取到值_直接打开','未取到值','url的domain解析失败','')
 	) t1
 	GROUP BY lib, project_name, is_first_day, country, province,latest_search_keyword WITH CUBE
 ) t2
@@ -121,7 +121,7 @@ FROM (
 				, count(1) AS pv
 			FROM ${ck_log_db}log_analysis
 			WHERE stat_date <= '${cal_date}'
-				AND stat_date >= '${previous_date}'
+				AND stat_date >= '${previous_date}' and latest_search_keyword not in ('取值异常','未取到值_直接打开','未取到值','url的domain解析失败','')
 				AND event_session_id <> ''
 			GROUP BY event_session_id, lib, project_name, is_first_day, country, province,latest_search_keyword
 		) t3

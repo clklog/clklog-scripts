@@ -83,7 +83,7 @@ FROM (
 				AND event = '\$AppViewScreen', event, lib = 'MiniProgram'
 				AND event = '\$MPViewScreen', event, NULL) AS pv 
 		FROM ${ck_log_db}log_analysis
-		WHERE stat_date = '${cal_date}'
+		WHERE stat_date = '${cal_date}' and latest_search_keyword not in ('取值异常','未取到值_直接打开','未取到值','url的domain解析失败','')
 	) t1
 	GROUP BY lib, project_name,latest_search_keyword WITH CUBE
 ) t2"
