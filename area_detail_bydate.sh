@@ -28,6 +28,8 @@ fi;
 
 # 文件存放目录
 dir_path=/usr/local/services/scripts/cklog/area_detail_bydate
+mkdir ${dir_path}
+
 
 # 脚本日志名
 shell_log_name=${current_date}.log

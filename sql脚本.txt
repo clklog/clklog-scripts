@@ -1,5 +1,13 @@
+
+# 创建数据库
+
+CREATE DATABASE IF NOT EXISTS clklog ENGINE = Atomic;
+
+# 切换数据库
+use clklog;
+
 # 埋点日志表
-CREATE TABLE clklog.log_analysis
+CREATE TABLE IF NOT EXISTS  log_analysis
 (
     `kafka_data_time` String,
     `project_name` String ,
@@ -112,7 +120,7 @@ SETTINGS index_granularity = 8192;
 
 
 # 流量概览表
-CREATE TABLE clklog.flow_summary_bydate
+CREATE TABLE IF NOT EXISTS  flow_summary_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -127,11 +135,11 @@ CREATE TABLE clklog.flow_summary_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (lib, project_name, stat_date)
+ORDER BY (lib, project_name)
 SETTINGS index_granularity = 8192;
 
 # 流量趋势表
-CREATE TABLE clklog.flow_summary_byhour
+CREATE TABLE IF NOT EXISTS  flow_summary_byhour
 (
     `stat_date` Date,
     `stat_hour` String,
@@ -147,12 +155,12 @@ CREATE TABLE clklog.flow_summary_byhour
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (lib, project_name, stat_date,stat_hour)
+ORDER BY (lib, project_name,stat_hour)
 SETTINGS index_granularity = 8192;
 
 
 # 访客表
-CREATE TABLE clklog.visitor_summary_bydate
+CREATE TABLE IF NOT EXISTS  visitor_summary_bydate
 (
     `stat_date` Date, 
     `is_first_day` String, 
@@ -168,12 +176,12 @@ CREATE TABLE clklog.visitor_summary_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (lib, project_name, stat_date,is_first_day)
+ORDER BY (lib, project_name,is_first_day)
 SETTINGS index_granularity = 8192;
 
 
 # 受访页面表
-CREATE TABLE clklog.visituri_summary_bydate
+CREATE TABLE IF NOT EXISTS  visituri_summary_bydate
 (
     `stat_date` Date,  
     `lib` String,
@@ -184,12 +192,12 @@ CREATE TABLE clklog.visituri_summary_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (lib, project_name,uri, stat_date)
+ORDER BY (lib, project_name,uri)
 SETTINGS index_granularity = 8192;
 
 
 # 地域页面表
-CREATE TABLE clklog.area_summary_bydate
+CREATE TABLE IF NOT EXISTS  area_summary_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -200,11 +208,11 @@ CREATE TABLE clklog.area_summary_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (country,province,lib, project_name, stat_date)
+ORDER BY (lib, project_name,country,province)
 SETTINGS index_granularity = 8192;
 
 # 搜索词表
-CREATE TABLE clklog.searchword_summary_bydate
+CREATE TABLE IF NOT EXISTS  searchword_summary_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -215,12 +223,12 @@ CREATE TABLE clklog.searchword_summary_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (searchword,lib, project_name, stat_date)
+ORDER BY (lib, project_name,searchword)
 SETTINGS index_granularity = 8192;
 
 
 # 来源网站表
-CREATE TABLE clklog.sourcesite_summary_bydate
+CREATE TABLE IF NOT EXISTS  sourcesite_summary_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -231,13 +239,13 @@ CREATE TABLE clklog.sourcesite_summary_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (sourcesite,lib, project_name, stat_date)
+ORDER BY (lib, project_name,sourcesite)
 SETTINGS index_granularity = 8192;
 
 
 
 # 趋势详情按日统计表
-CREATE TABLE clklog.flow_trend_bydate
+CREATE TABLE IF NOT EXISTS  flow_trend_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -256,12 +264,12 @@ CREATE TABLE clklog.flow_trend_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (lib, project_name,is_first_day,country,province, stat_date)
+ORDER BY (lib, project_name,country,province,is_first_day)
 SETTINGS index_granularity = 8192;
 
 
 # 趋势详情按小时统计表
-CREATE TABLE clklog.flow_trend_byhour
+CREATE TABLE IF NOT EXISTS  flow_trend_byhour
 (
     `stat_date` Date,
     `stat_hour` String,
@@ -281,12 +289,12 @@ CREATE TABLE clklog.flow_trend_byhour
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (lib, project_name,is_first_day,country,province, stat_date,stat_hour)
+ORDER BY (lib, project_name,country,province,is_first_day,stat_hour)
 SETTINGS index_granularity = 8192;
 
 
 # 搜索词详情表
-CREATE TABLE clklog.searchword_detail_bydate
+CREATE TABLE IF NOT EXISTS  searchword_detail_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -306,12 +314,12 @@ CREATE TABLE clklog.searchword_detail_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (country,province,is_first_day,searchword,lib, project_name, stat_date)
+ORDER BY (lib, project_name,country,province,is_first_day,searchword)
 SETTINGS index_granularity = 8192;
 
 
 # 渠道详情表
-CREATE TABLE clklog.channel_detail_bydate
+CREATE TABLE IF NOT EXISTS  channel_detail_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -330,12 +338,12 @@ CREATE TABLE clklog.channel_detail_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (country,province,is_first_day,lib, project_name, stat_date)
+ORDER BY (lib, project_name,country,province,is_first_day)
 SETTINGS index_granularity = 8192;
 
 
 # 设备详情表
-CREATE TABLE clklog.device_detail_bydate
+CREATE TABLE IF NOT EXISTS  device_detail_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -355,12 +363,12 @@ CREATE TABLE clklog.device_detail_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (country,province,is_first_day,device,lib, project_name, stat_date)
+ORDER BY (lib, project_name,country,province,is_first_day,device)
 SETTINGS index_granularity = 8192;
 
 
 # 新老访客详情表
-CREATE TABLE clklog.visitor_detail_bydate
+CREATE TABLE IF NOT EXISTS  visitor_detail_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -379,11 +387,11 @@ CREATE TABLE clklog.visitor_detail_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (country,province,is_first_day,lib, project_name, stat_date)
+ORDER BY (lib, project_name,country,province,is_first_day)
 SETTINGS index_granularity = 8192;
 
 # 新老访客生命周期详情表
-CREATE TABLE clklog.visitor_life_bydate
+CREATE TABLE IF NOT EXISTS  visitor_life_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -399,12 +407,12 @@ CREATE TABLE clklog.visitor_life_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (country,province,lib, project_name, stat_date)
+ORDER BY (lib, project_name,country,province)
 SETTINGS index_granularity = 8192;
 
 
 # 来源网站详情表
-CREATE TABLE clklog.sourcesite_detail_bydate
+CREATE TABLE IF NOT EXISTS  sourcesite_detail_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -424,12 +432,12 @@ CREATE TABLE clklog.sourcesite_detail_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (country,province,is_first_day,sourcesite,lib, project_name, stat_date)
+ORDER BY (lib, project_name,country,province,is_first_day,sourcesite)
 SETTINGS index_granularity = 8192;
 
 
 # 用户访问页数分布表
-CREATE TABLE clklog.user_pv_bydate
+CREATE TABLE IF NOT EXISTS  user_pv_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -451,12 +459,12 @@ CREATE TABLE clklog.user_pv_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (country,province,is_first_day,lib, project_name, stat_date)
+ORDER BY (lib, project_name,country,province,is_first_day)
 SETTINGS index_granularity = 8192;
 
 
 # 用户访问时长分布表
-CREATE TABLE clklog.user_visittime_bydate
+CREATE TABLE IF NOT EXISTS  user_visittime_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -479,11 +487,11 @@ CREATE TABLE clklog.user_visittime_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (country,province,is_first_day,lib, project_name, stat_date)
+ORDER BY (lib, project_name,country,province,is_first_day)
 SETTINGS index_granularity = 8192;
 
 # 用户访问频次分布表
-CREATE TABLE clklog.user_visit_bydate
+CREATE TABLE IF NOT EXISTS  user_visit_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -511,11 +519,11 @@ CREATE TABLE clklog.user_visit_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (country,province,is_first_day,lib, project_name, stat_date)
+ORDER BY (lib, project_name,country,province,is_first_day)
 SETTINGS index_granularity = 8192;
 
 # 地域详情表
-CREATE TABLE clklog.area_detail_bydate
+CREATE TABLE IF NOT EXISTS  area_detail_bydate
 (
     `stat_date` Date,
     `lib` String,
@@ -534,11 +542,11 @@ CREATE TABLE clklog.area_detail_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (country,province,is_first_day,lib, project_name, stat_date)
+ORDER BY (lib, project_name,country,province,is_first_day)
 SETTINGS index_granularity = 8192;
 
 # 受访页面详情表
-CREATE TABLE clklog.visituri_detail_bydate
+CREATE TABLE IF NOT EXISTS  visituri_detail_bydate
 (
     `stat_date` Date,  
     `lib` String,
@@ -561,12 +569,12 @@ CREATE TABLE clklog.visituri_detail_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (lib, project_name,uri, stat_date,is_first_day,country,province)
+ORDER BY (lib, project_name,country,province,is_first_day,uri)
 SETTINGS index_granularity = 8192;
 
 
 # 用户行为分析统计表
-CREATE TABLE clklog.visitor_summary_byvisitor
+CREATE TABLE IF NOT EXISTS  visitor_summary_byvisitor
 (
     `stat_date` Date,  
     `lib` String,
@@ -587,13 +595,13 @@ CREATE TABLE clklog.visitor_summary_byvisitor
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (lib, project_name,is_first_day,country,province, stat_date,distinct_id)
+ORDER BY (lib, project_name,country,province,is_first_day,distinct_id)
 SETTINGS index_granularity = 8192;
 
 
 
 # 用户详细信息表
-CREATE TABLE clklog.visitor_detail_byinfo
+CREATE TABLE IF NOT EXISTS  visitor_detail_byinfo
 (
 	`stat_date` Date,  
     `lib` String,
@@ -614,11 +622,11 @@ CREATE TABLE clklog.visitor_detail_byinfo
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (country,province,city,is_first_day,lib,distinct_id, project_name,stat_date,client_ip,manufacturer)
+ORDER BY (lib, project_name,country,province,city,is_first_day,distinct_id,client_ip,manufacturer)
 SETTINGS index_granularity = 8192;
 
 # 用户详细信息访问表
-CREATE TABLE clklog.visitor_detail_bysession
+CREATE TABLE IF NOT EXISTS  visitor_detail_bysession
 (
 	`stat_date` Date,  
     `project_name` String,
@@ -631,5 +639,5 @@ CREATE TABLE clklog.visitor_detail_bysession
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (distinct_id, project_name, stat_date)
+ORDER BY (project_name,distinct_id)
 SETTINGS index_granularity = 8192;
