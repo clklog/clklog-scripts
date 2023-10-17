@@ -546,7 +546,7 @@ ORDER BY (lib, project_name,country,province,is_first_day)
 SETTINGS index_granularity = 8192;
 
 # 受访页面详情表
-CREATE TABLE IF NOT EXISTS  visituri_detail_bydate
+CREATE TABLE clklog.visituri_detail_bydate
 (
     `stat_date` Date,  
     `lib` String,
@@ -555,6 +555,8 @@ CREATE TABLE IF NOT EXISTS  visituri_detail_bydate
     `country` String,
     `province` String,
     `uri` String,
+	`uri_path` String,
+    `title` String, 
     `pv` UInt32 DEFAULT 0, 
     `visit_count` UInt32 DEFAULT 0, 
     `uv` UInt32 DEFAULT 0,
@@ -569,7 +571,7 @@ CREATE TABLE IF NOT EXISTS  visituri_detail_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (lib, project_name,country,province,is_first_day,uri)
+ORDER BY (lib, project_name,country,province,is_first_day,title,uri,uri_path)
 SETTINGS index_granularity = 8192;
 
 
