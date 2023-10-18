@@ -187,12 +187,13 @@ CREATE TABLE IF NOT EXISTS  visituri_summary_bydate
     `lib` String,
     `project_name` String,
     `uri` String,
+    `title` String,
     `pv` UInt32 DEFAULT 0,
     `update_time` DateTime
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (lib, project_name,uri)
+ORDER BY (lib, project_name,uri,title)
 SETTINGS index_granularity = 8192;
 
 
@@ -531,6 +532,7 @@ CREATE TABLE IF NOT EXISTS  area_detail_bydate
 	`is_first_day` String,
     `country` String,
     `province` String, 
+    `city` String, 
     `pv` UInt32 DEFAULT 0,
     `visit_count` UInt32 DEFAULT 0, 
     `uv` UInt32 DEFAULT 0,
@@ -542,7 +544,7 @@ CREATE TABLE IF NOT EXISTS  area_detail_bydate
 )
 ENGINE = ReplacingMergeTree
 PARTITION BY stat_date
-ORDER BY (lib, project_name,country,province,is_first_day)
+ORDER BY (lib, project_name,country,province,is_first_day,city)
 SETTINGS index_granularity = 8192;
 
 # 受访页面详情表
