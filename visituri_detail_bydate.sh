@@ -149,7 +149,7 @@ FROM (
 			t_e_c3.is_first_day AS is_first_day,
 			t_e_c3.country AS country,
 			t_e_c3.province AS province,
-			count(1) AS exit_count,
+			sum(t_e_c3.exit_count) AS exit_count,
 			array(t_e_c3.url,t_e_c3.url_path,t_e_c3.title) AS urlAndPathAndTitle 
 			FROM
 			(
@@ -162,7 +162,8 @@ FROM (
 				t_e_c1.event_session_id AS event_session_id,
 				if(t_e_c1.url = '' or url='url的domain解析失败', 'N/A', url) AS url,
 				if(t_e_c1.title = '','N/A', title) AS title,
-				if(t_e_c1.url_path = '', 'N/A', url_path) AS url_path
+				if(t_e_c1.url_path = '', 'N/A', url_path) AS url_path,
+				count(1) as exit_count 
 				FROM ${ck_log_db}log_analysis t_e_c1,
 			    (
 					SELECT lib, project_name, is_first_day
@@ -201,7 +202,7 @@ FROM (
 			t_e_c3.is_first_day AS is_first_day,
 			t_e_c3.country AS country,
 			t_e_c3.province AS province,
-			count(1) AS entry_count,
+			sum(t_e_c3.entry_count) AS entry_count,
 			array(t_e_c3.url,t_e_c3.url_path,t_e_c3.title) AS urlAndPathAndTitle 
 			FROM
 			(
@@ -214,7 +215,8 @@ FROM (
 				t_e_c1.event_session_id AS event_session_id,
 				if(t_e_c1.url = '' or url='url的domain解析失败', 'N/A', url) AS url,
 				if(t_e_c1.title = '','N/A', title) AS title,
-				if(t_e_c1.url_path = '', 'N/A', url_path) AS url_path
+				if(t_e_c1.url_path = '', 'N/A', url_path) AS url_path,
+				count(1) as entry_count 
 				FROM ${ck_log_db}log_analysis t_e_c1,
 			    (
 					SELECT lib, project_name, is_first_day
@@ -234,7 +236,7 @@ FROM (
 				WHERE t_e_c1.event_session_id=t_e_c2.teventSessionId 
 				AND t_e_c1.log_time=t_e_c2.minTime 
 				AND t_e_c1.url<>'' 
-				AND t_e_c1.event in('$pageview','$AppViewScreen','$MPViewScreen')
+				AND t_e_c1.event in('\$pageview','\$AppViewScreen','\$MPViewScreen')
 				AND indexOf(stat_dates, toDate('${cal_date}')) = 1
 				GROUP BY t_e_c2.lib, t_e_c2.project_name, t_e_c2.is_first_day, t_e_c2.country, t_e_c2.province,t_e_c1.event_session_id,t_e_c1.url,t_e_c1.title,t_e_c1.url_path
 			) t_e_c3
@@ -276,6 +278,7 @@ FROM (
 						, event_session_id AS teventSessionId
 						, arraySort(groupUniqArray(stat_date)) AS stat_dates
 						, min(log_time) AS minTime 
+						, max(log_time) AS maxTime 
 					FROM ${ck_log_db}log_analysis
 					WHERE stat_date <= '${cal_date}'
 						AND stat_date >= '${previous_date}'
@@ -285,9 +288,10 @@ FROM (
 					GROUP BY event_session_id, lib, project_name, is_first_day, country, province
 				) t_e_c2 
 				WHERE t_e_c1.event_session_id=t_e_c2.teventSessionId 
-				AND t_e_c1.log_time=t_e_c2.minTime 
+				AND t_e_c1.log_time>=t_e_c2.minTime 
+				AND t_e_c1.log_time<t_e_c2.maxTime
 				AND t_e_c1.url<>'' 
-				AND t_e_c1.event in('$pageview','$AppViewScreen','$MPViewScreen')
+				AND t_e_c1.event in('\$pageview','\$AppViewScreen','\$MPViewScreen')
 				AND indexOf(stat_dates, toDate('${cal_date}')) = 1
 				GROUP BY t_e_c2.lib, t_e_c2.project_name, t_e_c2.is_first_day, t_e_c2.country, t_e_c2.province,t_e_c1.event_session_id,t_e_c1.url,t_e_c1.title,t_e_c1.url_path
 			) t_e_c3
