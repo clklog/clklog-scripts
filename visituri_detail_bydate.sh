@@ -78,6 +78,7 @@ SELECT '${cal_date}' AS stat_date
 	, If(t2.urlAndPathAndTitle[1] = '','all',t2.urlAndPathAndTitle[1]) as url
 	, If(t2.urlAndPathAndTitle[2] = '','all',t2.urlAndPathAndTitle[2]) as url_path
 	, If(t2.urlAndPathAndTitle[3] = '','all',t2.urlAndPathAndTitle[3]) as title 
+	, If(startsWith(url, 'http'), concat(protocol(url), '://', domain(url)), '')
 	, t2.pv, t4.visitCount, t2.uv, t2.new_uv, t2.ipCount
 	, t4.visitTime, t4.bounce,t6.entry_count AS entry_count,t5.exit_count AS exit_count,t7.down_pv_count AS down_pv_count,NOW() AS update_time 
 FROM (
