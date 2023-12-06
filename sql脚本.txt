@@ -111,10 +111,12 @@ CREATE TABLE IF NOT EXISTS  log_analysis
     `adv_id` String,
     `user_key` String DEFAULT '',
     `is_logined` Int8 DEFAULT 0,
-    `event_session_id` String
+    `event_session_id` String,
+    `raw_url` String,
+    `create_time` DateTime64
 )
 ENGINE = MergeTree
-PARTITION BY (stat_date, stat_hour)
+PARTITION BY (stat_date)
 ORDER BY distinct_id
 SETTINGS index_granularity = 8192;
 
