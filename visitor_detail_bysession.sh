@@ -74,8 +74,8 @@ SELECT '${cal_date}' AS stat_date
 	, multiIf(t2.country = '', 'all', t2.country = 'N/A', '未知国家', t2.country) AS country
 	, multiIf(t2.province = '', 'all', t2.province = 'N/A', '未知省份', t2.province) AS province
 	, if(t2.client_ip = '', 'N/A', t2.client_ip) AS client_ip
-	, multiIf(t2.latest_referrer_host = '', 'all', t2.latest_referrer_host = 'N/A', '直接访问', t2.latest_referrer_host) AS latest_referrer_host
-	, multiIf(t2.latest_search_keyword = '', 'all', t2.latest_search_keyword = 'N/A', '', t2.latest_search_keyword) AS latest_search_keyword
+	, multiIf(t2.latest_referrer_host = '', 'all', t2.latest_referrer_host = 'N/A', '直接访问', t2.latest_referrer_host) AS sourcesite
+	, multiIf(t2.latest_search_keyword = '', 'all', t2.latest_search_keyword = 'N/A', '', t2.latest_search_keyword) AS searchword
 	, t2.distinct_id AS distinct_id
 	, t2.event_session_id AS event_session_id
 	, t2.first_time AS first_time
