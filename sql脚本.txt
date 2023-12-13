@@ -634,11 +634,17 @@ CREATE TABLE IF NOT EXISTS  visitor_detail_bysession
 (
 	`stat_date` Date,  
     `project_name` String,
+    `country` String,
+    `province` String,
+    `client_ip` String,
+    `sourcesite` String,
+    `searchword` String,
     `distinct_id` String,
     `event_session_id` String,
     `first_time` DateTime,
+    `latest_time` DateTime,
     `visit_time` UInt64 DEFAULT 0,
-    `client_ip` String,
+    `pv` UInt32 DEFAULT 0,
     `update_time` DateTime
 )
 ENGINE = ReplacingMergeTree
