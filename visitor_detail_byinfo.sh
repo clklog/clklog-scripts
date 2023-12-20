@@ -174,7 +174,7 @@ FROM (
 
   ${ck_login} --query="${cur_date_sql}"
   # 强制进行分区合并，实现重复数据的删除
-  ${ck_login} --query="optimize table ${ck_stat_db}visitor_detail_byinfo FINAL"
+  ${ck_login} --query="optimize table ${ck_stat_db}visitor_detail_byinfo FINAL SETTINGS optimize_skip_merged_partitions=1"
   echo "生成数据：${cal_date}" >> ${dir_path}/${shell_log_name}
   
   #开始日期+1天
