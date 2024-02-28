@@ -1,9 +1,9 @@
 #!/bin/bash
-#ckhost="localhost"
-#ckport=9000
-ck_login="clickhouse-client -u default --password 123456"
-ck_log_db="clklog."
-ck_stat_db="clklog."
+
+source ./clklog-scripts.env
+ck_login="clickhouse-client -u $CK_USER_NAME --password $CK_USER_PWD"
+ck_log_db="$CLKLOG_LOG_DB."
+ck_stat_db="$CLKLOG_STAT_DB."
 
 #-----------------------------------------------------------
 # 参数1：0-全量计算（truncate全表，重新生成数据），1-增量计算
@@ -27,8 +27,8 @@ if [ $# -ge 2 ] ; then
 fi;
 
 # 文件存放目录
-dir_path=/usr/local/services/scripts/cklog/sourcesite_summary_bydate
-mkdir ${dir_path}
+dir_path=$CLKLOG_SCRIPT_LOG/sourcesite_summary_bydate
+mkdir -p ${dir_path}
 
 # 脚本日志名
 shell_log_name=${current_date}.log

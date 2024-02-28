@@ -1,9 +1,9 @@
 #!/bin/bash
-#ckhost="localhost"
-#ckport=9000
-ck_login="clickhouse-client -u default --password 123456"
-ck_log_db="clklog."
-ck_stat_db="clklog."
+
+source ./clklog-scripts.env
+ck_login="clickhouse-client -u $CK_USER_NAME --password $CK_USER_PWD"
+ck_log_db="$CLKLOG_LOG_DB."
+ck_stat_db="$CLKLOG_STAT_DB."
 
 
 #-----------------------------------------------------------
@@ -28,7 +28,8 @@ if [ $# -ge 2 ] ; then
 fi;
 
 # 文件存放目录
-dir_path=/usr/local/services/scripts/cklog/visituri_detail_bydate
+dir_path=$CLKLOG_SCRIPT_LOG/visituri_detail_bydate
+mkdir -p ${dir_path}
 
 # 脚本日志名
 shell_log_name=${current_date}.log
@@ -80,7 +81,7 @@ SELECT '${cal_date}' AS stat_date
 	, If(t2.urlAndPathAndTitle[3] = '','all',t2.urlAndPathAndTitle[3]) as title 
 	, If(startsWith(url, 'http'), concat(protocol(url), '://', domain(url)), '')
 	, t2.pv, t4.visitCount, t2.uv, t2.new_uv, t2.ipCount
-	, t4.visitTime, t4.bounce,t6.entry_count AS entry_count,t5.exit_count AS exit_count,t7.down_pv_count AS down_pv_count,NOW() AS update_time 
+	, t4.visitTime, t4.bounce,t5.entry_count,t5.exit_count,t5.down_pv_count,NOW() AS update_time 
 FROM (
 	SELECT lib, project_name, is_first_day, country, province
 		, count(t1.pv) AS pv, COUNTDistinct(t1.user) AS uv
@@ -150,7 +151,9 @@ FROM (
 			t_e_c3.is_first_day AS is_first_day,
 			t_e_c3.country AS country,
 			t_e_c3.province AS province,
-			sum(t_e_c3.exit_count) AS exit_count,
+			count(exit_session) AS exit_count, 
+			count(down_pv_session) AS down_pv_count, 
+			count(entry_session) AS entry_count, 
 			array(t_e_c3.url,t_e_c3.url_path,t_e_c3.title) AS urlAndPathAndTitle 
 			FROM
 			(
@@ -164,7 +167,9 @@ FROM (
 				if(t_e_c1.url = '' or url='url的domain解析失败', 'N/A', url) AS url,
 				if(t_e_c1.title = '','N/A', title) AS title,
 				if(t_e_c1.url_path = '', 'N/A', url_path) AS url_path,
-				count(1) as exit_count 
+				if(t_e_c1.log_time = t_e_c2.maxTime, event_session_id, NULL) AS exit_session, 
+				if(t_e_c1.log_time > t_e_c2.minTime	AND t_e_c1.log_time <= t_e_c2.maxTime, event_session_id, NULL) AS down_pv_session, 
+				if(t_e_c1.log_time = t_e_c2.minTime, event_session_id, NULL) AS entry_session
 				FROM ${ck_log_db}log_analysis t_e_c1,
 			    (
 					SELECT lib, project_name, is_first_day
@@ -172,6 +177,7 @@ FROM (
 						, if(province = '', 'N/A', province) AS province 
 						, event_session_id AS teventSessionId
 						, arraySort(groupUniqArray(stat_date)) AS stat_dates
+						, min(log_time) AS minTime
 						, max(log_time) AS maxTime 
 					FROM ${ck_log_db}log_analysis
 					WHERE stat_date <= '${cal_date}'
@@ -181,12 +187,10 @@ FROM (
 						AND event in('\$pageview','\$AppViewScreen','\$MPViewScreen')
 					GROUP BY event_session_id, lib, project_name, is_first_day, country, province
 				) t_e_c2 
-				WHERE t_e_c1.event_session_id=t_e_c2.teventSessionId 
-				AND t_e_c1.log_time=t_e_c2.maxTime 
+				WHERE t_e_c1.stat_date='${cal_date}' AND t_e_c1.event_session_id=t_e_c2.teventSessionId
 				AND t_e_c1.url<>''
 				AND t_e_c1.event in('\$pageview','\$AppViewScreen','\$MPViewScreen')
 				AND indexOf(stat_dates, toDate('${cal_date}')) = 1
-				GROUP BY t_e_c2.lib, t_e_c2.project_name, t_e_c2.is_first_day, t_e_c2.country, t_e_c2.province,t_e_c1.event_session_id,t_e_c1.url,t_e_c1.title,t_e_c1.url_path
 			) t_e_c3
 		    GROUP BY t_e_c3.lib, t_e_c3.project_name, t_e_c3.is_first_day, t_e_c3.country, t_e_c3.province,urlAndPathAndTitle WITH CUBE
 	) t5
@@ -195,115 +199,7 @@ FROM (
 		AND t2.country = t5.country
 		AND t2.province = t5.province
 		AND t2.is_first_day = t5.is_first_day 
-		AND t2.urlAndPathAndTitle = t5.urlAndPathAndTitle
-	LEFT JOIN (
-		SELECT 
-			t_e_c3.lib AS lib,
-			t_e_c3.project_name AS project_name,
-			t_e_c3.is_first_day AS is_first_day,
-			t_e_c3.country AS country,
-			t_e_c3.province AS province,
-			sum(t_e_c3.entry_count) AS entry_count,
-			array(t_e_c3.url,t_e_c3.url_path,t_e_c3.title) AS urlAndPathAndTitle 
-			FROM
-			(
-				SELECT 
-				t_e_c2.lib AS lib,
-				t_e_c2.project_name AS project_name,
-				t_e_c2.is_first_day AS is_first_day,
-				t_e_c2.country AS country,
-				t_e_c2.province AS province,
-				t_e_c1.event_session_id AS event_session_id,
-				if(t_e_c1.url = '' or url='url的domain解析失败', 'N/A', url) AS url,
-				if(t_e_c1.title = '','N/A', title) AS title,
-				if(t_e_c1.url_path = '', 'N/A', url_path) AS url_path,
-				count(1) as entry_count 
-				FROM ${ck_log_db}log_analysis t_e_c1,
-			    (
-					SELECT lib, project_name, is_first_day
-						, if(country = '', 'N/A', country) AS country
-						, if(province = '', 'N/A', province) AS province 
-						, event_session_id AS teventSessionId
-						, arraySort(groupUniqArray(stat_date)) AS stat_dates
-						, min(log_time) AS minTime 
-					FROM ${ck_log_db}log_analysis
-					WHERE stat_date <= '${cal_date}'
-						AND stat_date >= '${previous_date}'
-						AND event_session_id <> ''
-						AND url <> ''
-						AND event in('\$pageview','\$AppViewScreen','\$MPViewScreen')
-					GROUP BY event_session_id, lib, project_name, is_first_day, country, province
-				) t_e_c2 
-				WHERE t_e_c1.event_session_id=t_e_c2.teventSessionId 
-				AND t_e_c1.log_time=t_e_c2.minTime 
-				AND t_e_c1.url<>'' 
-				AND t_e_c1.event in('\$pageview','\$AppViewScreen','\$MPViewScreen')
-				AND indexOf(stat_dates, toDate('${cal_date}')) = 1
-				GROUP BY t_e_c2.lib, t_e_c2.project_name, t_e_c2.is_first_day, t_e_c2.country, t_e_c2.province,t_e_c1.event_session_id,t_e_c1.url,t_e_c1.title,t_e_c1.url_path
-			) t_e_c3
-		    GROUP BY t_e_c3.lib, t_e_c3.project_name, t_e_c3.is_first_day, t_e_c3.country, t_e_c3.province,urlAndPathAndTitle WITH CUBE
-	) t6
-	ON t2.lib = t6.lib
-		AND t2.project_name = t6.project_name
-		AND t2.country = t6.country
-		AND t2.province = t6.province
-		AND t2.is_first_day = t6.is_first_day 
-		AND t2.urlAndPathAndTitle = t6.urlAndPathAndTitle
-	LEFT JOIN (
-		SELECT 
-			t_e_c3.lib AS lib,
-			t_e_c3.project_name AS project_name,
-			t_e_c3.is_first_day AS is_first_day,
-			t_e_c3.country AS country,
-			t_e_c3.province AS province,
-			sum(t_e_c3.down_pv_count) AS down_pv_count,
-			array(t_e_c3.url,t_e_c3.url_path,t_e_c3.title) AS urlAndPathAndTitle 
-			FROM
-			(
-				SELECT 
-				t_e_c2.lib AS lib,
-				t_e_c2.project_name AS project_name,
-				t_e_c2.is_first_day AS is_first_day,
-				t_e_c2.country AS country,
-				t_e_c2.province AS province,
-				t_e_c1.event_session_id AS event_session_id,
-				count(1) AS down_pv_count,
-				if(t_e_c1.url = '' or url='url的domain解析失败', 'N/A', url) AS url,
-				if(t_e_c1.title = '','N/A', title) AS title,
-				if(t_e_c1.url_path = '', 'N/A', url_path) AS url_path
-				FROM ${ck_log_db}log_analysis t_e_c1,
-			    (
-					SELECT lib, project_name, is_first_day
-						, if(country = '', 'N/A', country) AS country
-						, if(province = '', 'N/A', province) AS province 
-						, event_session_id AS teventSessionId
-						, arraySort(groupUniqArray(stat_date)) AS stat_dates
-						, min(log_time) AS minTime 
-						, max(log_time) AS maxTime 
-					FROM ${ck_log_db}log_analysis
-					WHERE stat_date <= '${cal_date}'
-						AND stat_date >= '${previous_date}'
-						AND event_session_id <> ''
-						AND url <> ''
-						AND event in('\$pageview','\$AppViewScreen','\$MPViewScreen')
-					GROUP BY event_session_id, lib, project_name, is_first_day, country, province
-				) t_e_c2 
-				WHERE t_e_c1.event_session_id=t_e_c2.teventSessionId 
-				AND t_e_c1.log_time>=t_e_c2.minTime 
-				AND t_e_c1.log_time<t_e_c2.maxTime
-				AND t_e_c1.url<>'' 
-				AND t_e_c1.event in('\$pageview','\$AppViewScreen','\$MPViewScreen')
-				AND indexOf(stat_dates, toDate('${cal_date}')) = 1
-				GROUP BY t_e_c2.lib, t_e_c2.project_name, t_e_c2.is_first_day, t_e_c2.country, t_e_c2.province,t_e_c1.event_session_id,t_e_c1.url,t_e_c1.title,t_e_c1.url_path
-			) t_e_c3
-		    GROUP BY t_e_c3.lib, t_e_c3.project_name, t_e_c3.is_first_day, t_e_c3.country, t_e_c3.province,urlAndPathAndTitle WITH CUBE
-	) t7
-	ON t2.lib = t7.lib
-		AND t2.project_name = t7.project_name
-		AND t2.country = t7.country
-		AND t2.province = t7.province
-		AND t2.is_first_day = t7.is_first_day 
-		AND t2.urlAndPathAndTitle = t7.urlAndPathAndTitle"
+		AND t2.urlAndPathAndTitle = t5.urlAndPathAndTitle"
    echo ${cur_date_sql}
 
   ${ck_login} --query="${cur_date_sql}"
