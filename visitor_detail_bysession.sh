@@ -86,8 +86,8 @@ SELECT '${cal_date}' AS stat_date
 	FROM ( 
 		SELECT 
 		 project_name AS project_name
-		, country AS country
-		, province AS province
+		, multiIf(country = '', 'all', country = 'N/A', '未知国家', country) AS country
+		, multiIf(province = '', 'all', province = 'N/A', '未知省份', province) AS province
 		, client_ip AS client_ip
 		, latest_referrer_host AS latest_referrer_host
 		, latest_search_keyword AS latest_search_keyword
