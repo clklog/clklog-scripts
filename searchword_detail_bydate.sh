@@ -86,7 +86,7 @@ FROM (
 		SELECT lib, project_name, is_first_day,
 		  if(country = '', 'N/A', country) AS country
 			, if(province = '', 'N/A', province) AS province
-			, if(latest_search_keyword = '', 'N/A', latest_search_keyword) AS latest_search_keyword 
+			, latest_search_keyword 
 			, multiIf(lib = 'js'
 				AND event = '\$pageview', event, lib IN ('iOS', 'Android')
 				AND event = '\$AppViewScreen', event, lib = 'MiniProgram'
@@ -116,7 +116,7 @@ FROM (
 			SELECT lib, project_name, is_first_day
 				, if(country = '', 'N/A', country) AS country
 				, if(province = '', 'N/A', province) AS province 
-				, if(latest_search_keyword = '', 'N/A', latest_search_keyword) AS latest_search_keyword
+				, latest_search_keyword
 				, arraySort(groupUniqArray(stat_date)) AS stat_dates
 				, max(log_time) - min(log_time) AS diff
 				, count(1) AS pv

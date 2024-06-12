@@ -86,7 +86,7 @@ FROM (
 		SELECT lib, project_name, is_first_day,
 		  if(country = '', 'N/A', country) AS country
 			, if(province = '', 'N/A', province) AS province
-			, if(latest_referrer_host = '', 'N/A', latest_referrer_host) AS latest_referrer_host 
+			, if(latest_referrer_host = '' or latest_referrer_host='url的domain解析失败', 'N/A', latest_referrer_host) AS latest_referrer_host 
 			, multiIf(lib = 'js'
 				AND event = '\$pageview', event, lib IN ('iOS', 'Android')
 				AND event = '\$AppViewScreen', event, lib = 'MiniProgram'
@@ -116,7 +116,7 @@ FROM (
 			SELECT lib, project_name, is_first_day
 				, if(country = '', 'N/A', country) AS country
 				, if(province = '', 'N/A', province) AS province 
-				, if(latest_referrer_host = '', 'N/A', latest_referrer_host) AS latest_referrer_host 
+				, if(latest_referrer_host = '' or latest_referrer_host='url的domain解析失败', 'N/A', latest_referrer_host) AS latest_referrer_host 
 				, arraySort(groupUniqArray(stat_date)) AS stat_dates
 				, max(log_time) - min(log_time) AS diff
 				, count(1) AS pv
